@@ -1,0 +1,33 @@
+module.exports = {
+    zone:{
+        zoneContainer:{
+            background:'#f9f9f9',
+            border:'1px solid #fff',
+            padding:10,
+            marginTop:10
+        },
+        header:{
+            color:'blue',
+            textDecoration:'none'
+        },
+        zips:{
+            fontSize:'0.9em'
+        },
+        times:{
+            fontSize:'0.8em',
+            color:'grey'
+        }
+    },
+    comment:{
+        name:{
+            fontWeight:600
+        },
+        comment:{
+            marginTop:10
+        },
+        times:{
+            fontSize:'0.8em',
+            color:'grey'
+        }
+    }
+}

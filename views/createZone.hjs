@@ -1,0 +1,14 @@
+<!DOCTYPE=html>
+<html>
+    <head>
+        <title>CreateZone</title>
+    </head>
+    <body>
+        <h1>Create Zone</h1>
+        <form action="/api/zone" method="post">
+            <input type="text" name="name" placeholder="Enter your name" />
+            <input type="text" name="zipcodes" placeholder="Enter the zipcodes" />
+            <input type="submit" value="Submit"/>
+        </form>
+    </body>
+</html>
