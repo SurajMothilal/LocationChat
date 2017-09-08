@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Zone from '../components/Zone'
 import styles from './style'
 import APIManager from '../utils/APIManager'
+import CreateZone from '../components/CreateZone'
 
 class Zones extends Component {
     constructor(){
@@ -40,17 +41,9 @@ class Zones extends Component {
             )
         })
     }
-    
-    updateZone(event){
-        let updatedState = Object.assign({}, this.state.zone)
-        updatedState[event.target.id] = event.target.value
-        this.setState({
-            zone:updatedState
-        })
-    }
-    
-    makeZone(){
-        let updatedZone = Object.assign({}, this.state.zone)
+        
+    makeZone(zone){
+        let updatedZone = Object.assign({}, zone)
         updatedZone['zipcodes'] = updatedZone['zipcodes'].split(',')
         let newUpdatedZone = []
         updatedZone['zipcodes'].forEach((zipCode)=>{
@@ -77,9 +70,7 @@ class Zones extends Component {
                 <ul className="list-group" style={styles.mainList}>
                     {this.renderList()}
                 </ul>
-                <input onChange={this.updateZone.bind(this)} id="name" className="form-control" name="name" placeholder="Enter your name" type="text" />
-                <input onChange={this.updateZone.bind(this)} id="zipcodes" className="form-control" name="zipcodes" placeholder="Enter the zipcodes" type="text" />
-                <input onClick={this.makeZone.bind(this)}className="btn btn-danger" type="submit" value="Submit Zone" />    
+               <CreateZone onCreate={this.makeZone.bind(this)} />
             </div>    
         )
     }
