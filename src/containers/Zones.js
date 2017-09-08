@@ -9,10 +9,7 @@ class Zones extends Component {
         super()
         this.state = {
             list:[],
-            zone:{
-                name:'',
-                zipcodes:''
-            }
+            selected:0
         }
     }
     
@@ -34,10 +31,17 @@ class Zones extends Component {
     
     }
     
+    selectZone(ind){
+        this.setState({
+            selected:ind
+        })
+    }
+    
     renderList(){
       return this.state.list.map((zone, i)=>{
+            const toggle = (this.state.selected==i)
             return(
-                <li key={i} className="list-item"><Zone payload={zone} /></li>
+                <li key={i} className="list-item"><Zone selectKey={i} onSelect={this.selectZone.bind(this)} isSelected={toggle} payload={zone} /></li>
             )
         })
     }

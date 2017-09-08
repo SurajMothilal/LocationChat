@@ -10453,6 +10453,10 @@ module.exports = {
         times: {
             fontSize: '0.8em',
             color: 'grey'
+        },
+        selectedHeader: {
+            color: 'red',
+            textDecoration: 'none'
         }
     },
     comment: {
@@ -23284,10 +23288,7 @@ var Zones = function (_Component) {
 
         _this.state = {
             list: [],
-            zone: {
-                name: '',
-                zipcodes: ''
-            }
+            selected: 0
         };
         return _this;
     }
@@ -23311,13 +23312,23 @@ var Zones = function (_Component) {
             }.bind(this));
         }
     }, {
+        key: 'selectZone',
+        value: function selectZone(ind) {
+            this.setState({
+                selected: ind
+            });
+        }
+    }, {
         key: 'renderList',
         value: function renderList() {
+            var _this2 = this;
+
             return this.state.list.map(function (zone, i) {
+                var toggle = _this2.state.selected == i;
                 return _react2.default.createElement(
                     'li',
                     { key: i, className: 'list-item' },
-                    _react2.default.createElement(_Zone2.default, { payload: zone })
+                    _react2.default.createElement(_Zone2.default, { selectKey: i, onSelect: _this2.selectZone.bind(_this2), isSelected: toggle, payload: zone })
                 );
             });
         }
@@ -24271,19 +24282,39 @@ var Zone = function (_Component) {
     }
 
     _createClass(Zone, [{
+        key: 'selectZone',
+        value: function selectZone(event) {
+            event.preventDefault();
+            this.props.onSelect(this.props.selectKey);
+        }
+    }, {
         key: 'render',
         value: function render() {
+            var title = this.props.isSelected ? _react2.default.createElement(
+                'h3',
+                null,
+                _react2.default.createElement(
+                    'a',
+                    { style: _style2.default.zone.selectedHeader, href: '#' },
+                    this.props.payload.name
+                )
+            ) : _react2.default.createElement(
+                'h3',
+                null,
+                _react2.default.createElement(
+                    'a',
+                    { style: _style2.default.zone.header, href: '#' },
+                    this.props.payload.name
+                )
+            );
+
             return _react2.default.createElement(
                 'div',
                 { style: _style2.default.zone.zoneContainer },
                 _react2.default.createElement(
-                    'h3',
-                    { style: _style2.default.zone.header },
-                    _react2.default.createElement(
-                        'a',
-                        { href: '#' },
-                        this.props.payload.name
-                    )
+                    'div',
+                    { onClick: this.selectZone.bind(this) },
+                    title
                 ),
                 _react2.default.createElement(
                     'span',

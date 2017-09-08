@@ -16,6 +16,10 @@ module.exports = {
         times:{
             fontSize:'0.8em',
             color:'grey'
+        },
+        selectedHeader:{
+            color:'red',
+            textDecoration:'none'
         }
     },
     comment:{
