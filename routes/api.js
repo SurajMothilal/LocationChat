@@ -35,7 +35,7 @@ router.post('/:resource', function(req, res, next){
             return
         }
         res.json({
-            confirmation:"Success!",
+            confirmation:"Success",
             content:result
         })
     })

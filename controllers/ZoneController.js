@@ -25,15 +25,6 @@ module.exports = {
     },
     
     create:function(params, callback){
-        
-        var zips = params['zipcodes']
-        var newZips = []
-        var zip = zips.split(',')
-        zip.forEach(function(element){
-            newZips.push(element.trim())
-        })
-        params['zipcodes'] = newZips
-            
         Zone.create(params, function(err, zone){
             if(err){
                 callback(err, null)

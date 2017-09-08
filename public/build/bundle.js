@@ -23250,10 +23250,6 @@ var _react = __webpack_require__(17);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _axios = __webpack_require__(84);
-
-var _axios2 = _interopRequireDefault(_axios);
-
 var _Zone = __webpack_require__(214);
 
 var _Zone2 = _interopRequireDefault(_Zone);
@@ -23261,6 +23257,10 @@ var _Zone2 = _interopRequireDefault(_Zone);
 var _style = __webpack_require__(91);
 
 var _style2 = _interopRequireDefault(_style);
+
+var _APIManager = __webpack_require__(217);
+
+var _APIManager2 = _interopRequireDefault(_APIManager);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -23282,8 +23282,7 @@ var Zones = function (_Component) {
             list: [],
             zone: {
                 name: '',
-                zipcodes: '',
-                timestamp: '12:00'
+                zipcodes: ''
             }
         };
         return _this;
@@ -23294,8 +23293,12 @@ var Zones = function (_Component) {
         value: function componentDidMount() {
             var updatedList = Object.assign([], this.state.list);
 
-            _axios2.default.get('/api/zone').then(function (results) {
-                results.data.content.map(function (zone) {
+            _APIManager2.default.get('/api/zone', null, function (err, response) {
+                if (err) {
+                    alert('Cant get resource' + err);
+                    return;
+                }
+                response.forEach(function (zone) {
                     updatedList.push(zone);
                 });
                 this.setState({
@@ -23326,12 +23329,24 @@ var Zones = function (_Component) {
     }, {
         key: 'makeZone',
         value: function makeZone() {
-            var updatedList = Object.assign([], this.state.list);
-            console.log(this.state.zone);
-            updatedList.push(this.state.zone);
-            this.setState({
-                list: updatedList
+            var updatedZone = Object.assign({}, this.state.zone);
+            updatedZone['zipcodes'] = updatedZone['zipcodes'].split(',');
+            var newUpdatedZone = [];
+            updatedZone['zipcodes'].forEach(function (zipCode) {
+                newUpdatedZone.push(zipCode.trim());
             });
+            updatedZone['zipcodes'] = newUpdatedZone;
+            _APIManager2.default.post('/api/zone', updatedZone, function (err, response) {
+                if (err) {
+                    alert('Cant post resource ' + err);
+                    return;
+                }
+                var updatedList = Object.assign([], this.state.list);
+                updatedList.push(response);
+                this.setState({
+                    list: updatedList
+                });
+            }.bind(this));
         }
     }, {
         key: 'render',
@@ -24314,10 +24329,6 @@ var _react = __webpack_require__(17);
 
 var _react2 = _interopRequireDefault(_react);
 
-var _axios = __webpack_require__(84);
-
-var _axios2 = _interopRequireDefault(_axios);
-
 var _Comment = __webpack_require__(216);
 
 var _Comment2 = _interopRequireDefault(_Comment);
@@ -24325,6 +24336,10 @@ var _Comment2 = _interopRequireDefault(_Comment);
 var _style = __webpack_require__(91);
 
 var _style2 = _interopRequireDefault(_style);
+
+var _APIManager = __webpack_require__(217);
+
+var _APIManager2 = _interopRequireDefault(_APIManager);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -24346,8 +24361,7 @@ var Comments = function (_Component) {
             list: [],
             comment: {
                 name: '',
-                comment: '',
-                timestamp: '12:00'
+                comment: ''
             }
         };
         return _this;
@@ -24358,8 +24372,12 @@ var Comments = function (_Component) {
         value: function componentDidMount() {
             var updatedList = Object.assign([], this.state.list);
 
-            _axios2.default.get('/api/comment').then(function (results) {
-                results.data.content.map(function (comment) {
+            _APIManager2.default.get('api/comment', null, function (err, response) {
+                if (err) {
+                    alert("Error loading comments " + err);
+                    return;
+                }
+                response.forEach(function (comment) {
                     updatedList.push(comment);
                 });
                 this.setState({
@@ -24390,11 +24408,13 @@ var Comments = function (_Component) {
     }, {
         key: 'submitComment',
         value: function submitComment() {
-            var updatedList = Object.assign([], this.state.list);
-            updatedList.push(this.state.comment);
-            this.setState({
-                list: updatedList
-            });
+            _APIManager2.default.post('api/comment', this.state.comment, function (err, response) {
+                var updatedList = Object.assign([], this.state.list);
+                updatedList.push(response);
+                this.setState({
+                    list: updatedList
+                });
+            }.bind(this));
         }
     }, {
         key: 'render',
@@ -24494,6 +24514,56 @@ var Comment = function (_Component) {
 }(_react.Component);
 
 exports.default = Comment;
+
+/***/ }),
+/* 217 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _axios = __webpack_require__(84);
+
+var _axios2 = _interopRequireDefault(_axios);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+
+    get: function get(url, params, callback) {
+        _axios2.default.get(url).then(function (response) {
+            if (response.data.confirmation != 'Success') {
+                callback({ message: 'Resource not found, Axios get failed' }, null);
+                return;
+            }
+            callback(null, response.data.content);
+        }).catch(function (error) {
+            callback(error, null);
+        });
+    },
+
+    post: function post(url, params, callback) {
+        _axios2.default.post(url, params).then(function (response) {
+            console.log(response.data.confirmation);
+            if (response.data.confirmation != 'Success') {
+                callback({ message: 'Failed to create resource' }, null);
+                return;
+            }
+            callback(null, response.data.content);
+        }).catch(function (error) {
+            callback(error, null);
+        });
+    },
+
+    put: function put() {},
+
+    delete: function _delete() {}
+
+};
 
 /***/ })
 /******/ ]);

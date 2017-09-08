@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import Comment from '../components/Comment'
 import styles from './style'
+import APIManager from '../utils/APIManager'
 
 class Comments extends Component {
     constructor(){
@@ -10,8 +10,7 @@ class Comments extends Component {
             list:[],
             comment:{
                 name:'',
-                comment:'',
-                timestamp:'12:00'
+                comment:''
             }
         }
     }
@@ -19,8 +18,12 @@ class Comments extends Component {
     componentDidMount(){
         let updatedList = Object.assign([], this.state.list)
         
-        axios.get('/api/comment').then(function(results){
-            results.data.content.map((comment)=>{
+        APIManager.get('api/comment', null, function(err, response){
+            if(err){
+                alert("Error loading comments "+err)
+                return
+            }
+            response.forEach((comment)=>{
                 updatedList.push(comment)
             })
             this.setState({
@@ -46,11 +49,13 @@ class Comments extends Component {
     }
     
     submitComment(){
-        let updatedList = Object.assign([], this.state.list)
-        updatedList.push(this.state.comment)
-        this.setState({
-            list:updatedList
-        })
+        APIManager.post('api/comment', this.state.comment, function(err, response){
+            let updatedList = Object.assign([], this.state.list)
+            updatedList.push(response)
+            this.setState({
+                list:updatedList
+            })
+        }.bind(this))
     }
     
     render() {

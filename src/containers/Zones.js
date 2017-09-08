@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
-import axios from 'axios'
 import Zone from '../components/Zone'
 import styles from './style'
+import APIManager from '../utils/APIManager'
 
 class Zones extends Component {
     constructor(){
@@ -10,8 +10,7 @@ class Zones extends Component {
             list:[],
             zone:{
                 name:'',
-                zipcodes:'',
-                timestamp:'12:00'
+                zipcodes:''
             }
         }
     }
@@ -19,14 +18,19 @@ class Zones extends Component {
     componentDidMount(){
         let updatedList = Object.assign([], this.state.list)
         
-        axios.get('/api/zone').then(function(results){
-           results.data.content.map((zone)=>{
-               updatedList.push(zone)
-           })
-           this.setState({
+        APIManager.get('/api/zone', null, function(err, response){
+            if(err){
+                alert('Cant get resource'+ err)
+                return
+            }
+            response.forEach((zone)=>{
+                updatedList.push(zone)
+            })
+            this.setState({
                 list:updatedList
             })
         }.bind(this))
+    
     }
     
     renderList(){
@@ -46,12 +50,25 @@ class Zones extends Component {
     }
     
     makeZone(){
-        let updatedList = Object.assign([], this.state.list)
-        console.log(this.state.zone)
-        updatedList.push(this.state.zone)
-        this.setState({
-            list:updatedList
+        let updatedZone = Object.assign({}, this.state.zone)
+        updatedZone['zipcodes'] = updatedZone['zipcodes'].split(',')
+        let newUpdatedZone = []
+        updatedZone['zipcodes'].forEach((zipCode)=>{
+            newUpdatedZone.push(zipCode.trim())
         })
+        updatedZone['zipcodes'] = newUpdatedZone
+        APIManager.post('/api/zone', updatedZone, function(err, response){
+            if(err){
+                alert('Cant post resource ' + err)
+                return
+            }
+            let updatedList = Object.assign([], this.state.list)
+            updatedList.push(response)
+            this.setState({
+                list:updatedList
+            })
+        }.bind(this))
+        
     }
     
     render(){
